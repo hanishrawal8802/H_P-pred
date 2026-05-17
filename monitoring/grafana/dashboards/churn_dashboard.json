@@ -1,0 +1,106 @@
+{
+  "__inputs": [],
+  "__requires": [{"type": "grafana","id": "grafana","name": "Grafana","version": "9.0.0"},{"type": "datasource","id": "prometheus","name": "Prometheus","version": "1.0.0"}],
+  "annotations": {"list": []},
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "gridPos": {"h": 3, "w": 24, "x": 0, "y": 0},
+      "id": 1,
+      "options": {"content": "# 📡 Telecom Churn MLOps Dashboard\nReal-time monitoring of the Churn Prediction API", "mode": "markdown"},
+      "title": "",
+      "type": "text"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "green","value": null},{"color": "red","value": 0.5}]}, "unit": "short"}},
+      "gridPos": {"h": 4, "w": 6, "x": 0, "y": 3},
+      "id": 2,
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "orientation": "auto", "textMode": "auto", "colorMode": "background"},
+      "title": "Total Predictions",
+      "targets": [{"datasource": {"type": "prometheus"}, "expr": "sum(churn_predictions_total)", "instant": true, "legendFormat": "Total"}],
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"unit": "short"}},
+      "gridPos": {"h": 4, "w": 6, "x": 6, "y": 3},
+      "id": 3,
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background"},
+      "title": "Churn Predictions",
+      "targets": [{"datasource": {"type": "prometheus"}, "expr": "churn_predictions_total{prediction_label=\"Churn\"}", "instant": true}],
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"unit": "s"}},
+      "gridPos": {"h": 4, "w": 6, "x": 12, "y": 3},
+      "id": 4,
+      "title": "Avg API Latency",
+      "targets": [{"datasource": {"type": "prometheus"}, "expr": "rate(churn_api_request_duration_seconds_sum[5m]) / rate(churn_api_request_duration_seconds_count[5m])", "legendFormat": "Avg Latency"}],
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"unit": "short"}},
+      "gridPos": {"h": 4, "w": 6, "x": 18, "y": 3},
+      "id": 5,
+      "title": "Failed Predictions",
+      "targets": [{"datasource": {"type": "prometheus"}, "expr": "churn_failed_predictions_total", "instant": true}],
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"unit": "reqps"}},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 7},
+      "id": 6,
+      "title": "API Request Rate",
+      "targets": [{"datasource": {"type": "prometheus"}, "expr": "rate(churn_api_requests_total[5m])", "legendFormat": "{{endpoint}} {{status}}"}],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"unit": "s"}},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 7},
+      "id": 7,
+      "title": "API Latency Percentiles",
+      "targets": [
+        {"datasource": {"type": "prometheus"}, "expr": "histogram_quantile(0.50, rate(churn_api_request_duration_seconds_bucket[5m]))", "legendFormat": "p50"},
+        {"datasource": {"type": "prometheus"}, "expr": "histogram_quantile(0.95, rate(churn_api_request_duration_seconds_bucket[5m]))", "legendFormat": "p95"},
+        {"datasource": {"type": "prometheus"}, "expr": "histogram_quantile(0.99, rate(churn_api_request_duration_seconds_bucket[5m]))", "legendFormat": "p99"}
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"unit": "short"}},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 15},
+      "id": 8,
+      "title": "Prediction Distribution Over Time",
+      "targets": [
+        {"datasource": {"type": "prometheus"}, "expr": "rate(churn_predictions_total{prediction_label=\"Churn\"}[5m])", "legendFormat": "Churn"},
+        {"datasource": {"type": "prometheus"}, "expr": "rate(churn_predictions_total{prediction_label=\"No Churn\"}[5m])", "legendFormat": "No Churn"}
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"unit": "short"}},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 15},
+      "id": 9,
+      "title": "Model Loaded Status",
+      "targets": [{"datasource": {"type": "prometheus"}, "expr": "churn_model_loaded", "legendFormat": "Model Loaded"}],
+      "type": "timeseries"
+    }
+  ],
+  "schemaVersion": 36,
+  "style": "dark",
+  "tags": ["mlops", "churn", "telecom"],
+  "title": "Telecom Churn MLOps",
+  "uid": "churn-mlops-001",
+  "version": 1
+}

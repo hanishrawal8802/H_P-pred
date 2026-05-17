@@ -1,0 +1,21 @@
+FROM apache/airflow:2.9.1-python3.11
+
+LABEL description="Custom Airflow image with MLOps dependencies"
+
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc libpq-dev git \
+    && rm -rf /var/lib/apt/lists/*
+USER airflow
+
+# Install project dependencies
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
+
+WORKDIR /opt/airflow
+
+COPY src/ ./src/
+COPY config/ ./config/
+COPY monitoring/ ./monitoring/
+COPY data/ ./data/
+COPY models/ ./models/

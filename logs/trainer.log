@@ -1,0 +1,63 @@
+2026-05-16 15:45:35 | WARNING  | __main__:_setup_mlflow:72 | MLflow setup failed, continuing without MLflow: API request to http://localhost:5000/api/2.0/mlflow/experiments/get-by-name failed with exception HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /api/2.0/mlflow/experiments/get-by-name?experiment_name=telco-churn-experiment (Caused by ProtocolError('Connection aborted.', RemoteDisconnected('Remote end closed connection without response')))
+2026-05-16 15:45:35 | INFO     | __main__:run:228 | Running full preprocessing pipeline...
+2026-05-16 15:45:35 | INFO     | src.ingestion.data_loader:run:91 | Starting data ingestion pipeline...
+2026-05-16 15:45:35 | INFO     | src.ingestion.data_loader:_resolve_source:35 | Found source file: C:\Users\vrati\.vscode\customer_IBM\mlops-churn-platform\Telco_customer_churn.xlsx
+2026-05-16 15:45:35 | INFO     | src.ingestion.data_loader:load:45 | Loading data from Telco_customer_churn.xlsx
+2026-05-16 15:45:44 | INFO     | src.ingestion.data_loader:load:51 | Loaded 7,043 rows × 33 columns
+2026-05-16 15:45:44 | WARNING  | src.ingestion.data_loader:validate_columns:66 | Columns with >50% nulls:
+Churn Reason    73.463013
+dtype: float64
+2026-05-16 15:45:44 | INFO     | src.ingestion.data_loader:validate_columns:67 | Column validation passed. Target distribution:
+Churn Label
+No     5174
+Yes    1869
+Name: count, dtype: int64
+2026-05-16 15:45:44 | INFO     | src.ingestion.data_loader:log_summary:79 | ==================================================
+2026-05-16 15:45:44 | INFO     | src.ingestion.data_loader:log_summary:80 | DATASET SUMMARY
+2026-05-16 15:45:44 | INFO     | src.ingestion.data_loader:log_summary:81 | ==================================================
+2026-05-16 15:45:44 | INFO     | src.ingestion.data_loader:log_summary:82 | Shape          : (7043, 33)
+2026-05-16 15:45:44 | INFO     | src.ingestion.data_loader:log_summary:83 | Memory usage   : 9526.9 KB
+2026-05-16 15:45:44 | INFO     | src.ingestion.data_loader:log_summary:84 | Null values    : 5174
+2026-05-16 15:45:44 | INFO     | src.ingestion.data_loader:log_summary:85 | Duplicates     : 0
+2026-05-16 15:45:44 | INFO     | src.ingestion.data_loader:log_summary:86 | Dtypes:
+object     24
+int64       6
+float64     3
+Name: count, dtype: int64
+2026-05-16 15:45:44 | INFO     | src.ingestion.data_loader:log_summary:87 | ==================================================
+2026-05-16 15:45:45 | INFO     | src.ingestion.data_loader:save_raw:74 | Raw data saved: data\raw\telco_churn_raw.csv (1702.2 KB)
+2026-05-16 15:45:45 | INFO     | src.ingestion.data_loader:run:96 | Data ingestion complete.
+2026-05-16 15:45:45 | INFO     | src.preprocessing.preprocessor:run:116 | Starting preprocessing pipeline...
+2026-05-16 15:45:45 | INFO     | src.preprocessing.preprocessor:load:38 | Loaded raw data: (7043, 33)
+2026-05-16 15:45:45 | WARNING  | src.preprocessing.preprocessor:drop_unnecessary_columns:50 | Dropping near-constant column: 'Count'
+2026-05-16 15:45:45 | WARNING  | src.preprocessing.preprocessor:drop_unnecessary_columns:50 | Dropping near-constant column: 'Country'
+2026-05-16 15:45:45 | WARNING  | src.preprocessing.preprocessor:drop_unnecessary_columns:50 | Dropping near-constant column: 'State'
+2026-05-16 15:45:45 | INFO     | src.preprocessing.preprocessor:drop_unnecessary_columns:52 | Dropped 8 columns. Remaining: 25
+2026-05-16 15:45:45 | INFO     | src.preprocessing.preprocessor:encode_target:80 | Target distribution (%):
+Churn Label
+0    73.46
+1    26.54
+Name: proportion, dtype: float64
+2026-05-16 15:45:45 | INFO     | src.preprocessing.preprocessor:handle_missing_values:97 | Missing value handling complete. Total nulls: 0
+2026-05-16 15:45:46 | INFO     | src.preprocessing.preprocessor:save:112 | Processed data saved: data\processed\telco_churn_processed.csv (7,043 rows × 25 cols)
+2026-05-16 15:45:46 | INFO     | src.preprocessing.preprocessor:run:124 | Preprocessing complete.
+2026-05-16 15:45:46 | INFO     | src.features.feature_engineer:run:143 | Starting feature engineering pipeline...
+2026-05-16 15:45:46 | INFO     | src.features.feature_engineer:identify_columns:50 | Numerical features: 7, Categorical features: 17
+2026-05-16 15:45:46 | INFO     | src.features.feature_engineer:fit_transform:94 | Fitting feature engineering pipeline...
+2026-05-16 15:49:28 | INFO     | src.features.feature_engineer:fit_transform:96 | Transformed shape: (7043, 20)
+2026-05-16 15:49:28 | INFO     | src.features.feature_engineer:get_feature_names:115 | Selected 20 features.
+2026-05-16 15:49:28 | INFO     | src.features.feature_engineer:save_pipeline:126 | Pipeline saved: models\feature_pipeline.pkl (39.9 KB)
+2026-05-16 15:49:29 | INFO     | src.features.feature_engineer:save_reference_data:140 | Reference data saved: data\processed\reference_data.csv (1000 rows)
+2026-05-16 15:49:29 | INFO     | src.features.feature_engineer:run:149 | Feature engineering complete.
+2026-05-16 15:49:29 | INFO     | __main__:run:239 | Train: (5634, 20) | Test: (1409, 20)
+2026-05-16 15:49:29 | INFO     | __main__:_train_single:120 | Training: logistic_regression
+2026-05-16 15:49:45 | INFO     | __main__:_train_single:198 | Best params (logistic_regression): {'solver': 'lbfgs', 'max_iter': 500, 'class_weight': 'balanced', 'C': 0.01}
+2026-05-16 15:49:46 | INFO     | __main__:_train_single:216 | logistic_regression → Accuracy:1.0 F1:1.0 ROC-AUC:1.0
+2026-05-16 15:49:46 | INFO     | __main__:_train_single:120 | Training: random_forest
+2026-05-16 15:50:05 | INFO     | __main__:_train_single:198 | Best params (random_forest): {'n_estimators': 100, 'min_samples_split': 5, 'max_depth': None, 'class_weight': 'balanced'}
+2026-05-16 15:50:06 | INFO     | __main__:_train_single:216 | random_forest → Accuracy:1.0 F1:1.0 ROC-AUC:1.0
+2026-05-16 15:50:06 | INFO     | __main__:_train_single:120 | Training: xgboost
+2026-05-16 15:50:21 | INFO     | __main__:_train_single:198 | Best params (xgboost): {'scale_pos_weight': 3, 'n_estimators': 200, 'max_depth': 7, 'learning_rate': 0.2}
+2026-05-16 15:50:21 | INFO     | __main__:_train_single:216 | xgboost → Accuracy:1.0 F1:1.0 ROC-AUC:1.0
+2026-05-16 15:50:21 | INFO     | __main__:run:263 | Best model: logistic_regression | roc_auc: 1.0
+2026-05-16 15:50:21 | INFO     | __main__:run:280 | Best model saved: models\best_model.pkl
