@@ -1,0 +1,38 @@
+services:
+  # ─────────────────────────────────────────
+  # FastAPI Prediction Service
+  # ─────────────────────────────────────────
+  - type: web
+    name: mlops-api
+    env: python
+    buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
+    startCommand: "uvicorn api.app:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: IS_RENDER
+        value: "true"
+      # Tells the API where the Dashboard is (to dynamically show the link in the portal)
+      - key: DASHBOARD_URL
+        fromService:
+          type: web
+          name: mlops-dashboard
+          envVarKey: RENDER_EXTERNAL_URL
+
+  # ─────────────────────────────────────────
+  # Streamlit Dashboard
+  # ─────────────────────────────────────────
+  - type: web
+    name: mlops-dashboard
+    env: python
+    buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
+    startCommand: "streamlit run dashboard/streamlit_app.py --server.port $PORT --server.address 0.0.0.0"
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      # Tells the Dashboard where the API is, dynamically referencing the api service
+      - key: API_URL
+        fromService:
+          type: web
+          name: mlops-api
+          envVarKey: RENDER_EXTERNAL_URL

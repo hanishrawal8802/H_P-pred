@@ -6,7 +6,7 @@ from typing import Optional
 
 from fastapi import FastAPI, HTTPException, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, HTMLResponse
 
 from api.schemas import (
     CustomerFeatures,
@@ -101,6 +101,68 @@ async def timing_middleware(request: Request, call_next):
 # ─────────────────────────────────────────
 # Routes
 # ─────────────────────────────────────────
+@app.get("/", response_class=HTMLResponse, tags=["Home"])
+async def root():
+    """Portal page with links to all services."""
+    dashboard_url = os.getenv("DASHBOARD_URL", "http://localhost:8501")
+    is_render = os.getenv("IS_RENDER", "false").lower() == "true"
+    
+    local_services = "" if is_render else """
+            <a href="http://localhost:5000" target="_blank" class="card">
+                <h2>MLflow Registry <span class="badge">Port 5000</span></h2>
+                <p>Experiment tracking, metrics, and model registry.</p>
+            </a>
+            <a href="http://localhost:8080" target="_blank" class="card">
+                <h2>Airflow Pipelines <span class="badge">Port 8080</span></h2>
+                <p>Scheduled data ingestion and model retraining DAGs.</p>
+            </a>
+            <a href="http://localhost:3000" target="_blank" class="card">
+                <h2>Grafana Monitoring <span class="badge">Port 3000</span></h2>
+                <p>System, API performance, and data drift dashboards.</p>
+            </a>
+            <a href="http://localhost:9090" target="_blank" class="card">
+                <h2>Prometheus Metrics <span class="badge">Port 9090</span></h2>
+                <p>Raw time-series metrics collection.</p>
+            </a>
+    """
+
+    return f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>MLOps Churn Platform Portal</title>
+        <style>
+            body {{ font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #f8fafc; margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }}
+            h1 {{ font-size: 2.5rem; margin-bottom: 0.5rem; font-weight: 700; background: linear-gradient(to right, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }}
+            p {{ color: #94a3b8; margin-bottom: 3rem; font-size: 1.1rem; }}
+            .grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; width: 100%; max-width: 1000px; padding: 0 2rem; }}
+            .card {{ background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 1.5rem; text-decoration: none; color: inherit; transition: all 0.3s ease; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); display: flex; flex-direction: column; }}
+            .card:hover {{ transform: translateY(-5px); border-color: #38bdf8; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }}
+            .card h2 {{ margin: 0 0 0.5rem 0; font-size: 1.3rem; color: #f1f5f9; display: flex; align-items: center; justify-content: space-between; }}
+            .card p {{ margin: 0; color: #94a3b8; font-size: 0.95rem; }}
+            .badge {{ font-size: 0.75rem; background: #0ea5e9; color: white; padding: 0.2rem 0.5rem; border-radius: 999px; font-weight: 600; }}
+        </style>
+    </head>
+    <body>
+        <h1>MLOps Churn Platform</h1>
+        <p>Your Central Hub for the End-to-End Pipeline {"(Cloud Mode)" if is_render else "(Local Mode)"}</p>
+        <div class="grid">
+            <a href="{dashboard_url}" target="_blank" class="card">
+                <h2>Streamlit Dashboard <span class="badge">{"Web" if is_render else "Port 8501"}</span></h2>
+                <p>Interactive UI for predicting churn and viewing insights.</p>
+            </a>
+            <a href="/docs" target="_blank" class="card">
+                <h2>FastAPI Docs <span class="badge">{"Web" if is_render else "Port 8000"}</span></h2>
+                <p>Swagger UI for testing prediction endpoints and health checks.</p>
+            </a>
+            {local_services}
+        </div>
+    </body>
+    </html>
+    """
+
 @app.get("/health", response_model=HealthResponse, tags=["Health"])
 async def health_check():
     """Health check endpoint for load balancers and monitoring."""
